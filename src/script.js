@@ -1,53 +1,89 @@
 
+let rounds = 0;
+let numOfRounds = 5;
 let HumanScore = 0;
 let ComputerScore = 0;
 
 function getComputerChoice() 
 {
-    const choices = ["rock", "paper", "scissors"];
-    let index = Math.floor(Math.random() * (choices.length));
-    return choices[index];
+    let index = Math.floor(Math.random() * 3);
+    return index;
 }
 
-function getHumanChoice() 
+function playRound(HumanInput)
 {
-    let choice = prompt("(r)rock, (p)paper or (s)scissors?");
-    choice = choice.toLowerCase();
+    if (rounds == numOfRounds){
+        rounds = 1;
+    }
 
-    return choice;
-}
-
-function playRound()
-{
-    let HumanChoice = getComputerChoice();//getHumanChoice();
     let ComputerChoice = getComputerChoice();
+    let HumanChoice = 0;
+    switch (HumanInput){
+        case("Rock"):
+        HumanChoice = 0;
+        break;
+        case("Paper"):
+        HumanChoice = 1;
+        break;
+        case("Scissors"):
+        HumanChoice = 2;
+        break;
+    }
 
-    let RoundResult = HumanChoice.localeCompare(ComputerChoice)
-    if (RoundResult == 1) {
-        console.log("You won the round!");
+    if (HumanChoice == ComputerChoice){ 
+        resultBlock.textContent = "Round tie!";
+    } else if (HumanChoice == 0 && ComputerChoice == 2 ||
+                HumanChoice == 1 && ComputerChoice == 0 ||
+                HumanChoice == 2 && ComputerChoice == 1) {
+                    resultBlock.textContent = "You won the round!";
         HumanScore++;
-    } else if (RoundResult == -1) {
-        console.log("You lost the round!");
+        rounds++;
+    } else {
+        resultBlock.textContent = "You lost the round!";
         ComputerScore++;
-    } else {
-        console.log("Round tie!");
+        rounds++;
     }
-    console.log("You: " + HumanScore + ", Computer: " + ComputerScore + ".")
-}
+    scoreBlock.textContent = "Score: " + "You: " + HumanScore + ", Computer: " + ComputerScore;
 
-function playGame(rounds)
-{
-    for(let i = 0; i < rounds; i++){
-        playRound();
-    }
-
-    if (HumanScore > ComputerScore) {
-        console.log("You Win!");
-    }else if (HumanScore < ComputerScore) {
-        console.log("You Lost!");
-    } else {
-        console.log("It's a Tie!");
+    if (rounds == numOfRounds) {
+        annouceWinner(HumanScore > ComputerScore ? "You" : "The Computer");
     }
 }
 
-console.log(playGame(5));
+const playButtons = document.querySelectorAll(".play-btn");
+playButtons.forEach((element) => {
+    element.addEventListener("click", function(){ playRound(element.textContent); });
+});
+
+function annouceWinner(winner) {
+    scoreBlock.textContent = "";
+    resultBlock.textContent = winner + " won after " + numOfRounds + " rounds!";
+    HumanScore = 0;
+    ComputerScore = 0;
+}
+
+const contentDiv = document.querySelector(".content");
+contentDiv.style["display"] = "flex";
+contentDiv.style["flex-direction"] = "column";
+contentDiv.style["justify-content"] = "center";
+contentDiv.style["align-items"] = "center";
+
+const scoreDiv = document.createElement("div");
+scoreDiv.style["display"] = "flex";
+scoreDiv.style["flex-direction"] = "column";
+scoreDiv.style["justify-content"] = "center";
+scoreDiv.style["align-items"] = "center";
+scoreDiv.style["margin"] = "8px 0px";
+scoreDiv.style["border-style"] = "solid";
+scoreDiv.style["padding"] = "22px";
+contentDiv.appendChild(scoreDiv);
+
+const scoreBlock = document.createElement("p");
+scoreBlock.classList.add("score");
+scoreBlock.textContent = "Score: " + "You: " + HumanScore + ", Computer: " + ComputerScore;
+scoreDiv.appendChild(scoreBlock);
+
+const resultBlock = document.createElement("p");
+resultBlock.classList.add("result");
+resultBlock.textContent = "result";
+scoreDiv.appendChild(resultBlock);
